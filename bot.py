@@ -58,10 +58,13 @@ def deabo(update, context):
 	context.bot.send_message(chat_id=chat_id,
 							text="Du hast alle Kategorien abgewählt und wirst keine Nachrichten mehr von diesem Bot "
 								"bekommen. Um dich wieder anzumelden, nutze /start. (To-Do: Bist du sicher? einfügen)")
-	users.pop(str(chat_id))
 
-	with open("database", "w") as json_file:
-		json.dump(users, json_file)
+	try:
+		users.pop(str(chat_id))
+		with open("database", "w") as json_file:
+			json.dump(users, json_file)
+	except KeyError:
+		pass
 
 
 def poll_answer(update, context):
