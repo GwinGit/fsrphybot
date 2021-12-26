@@ -9,8 +9,8 @@ config.read("config.ini")
 API_KEY = config["General"]["api_key"]
 ADMIN_IDS = [int(admin_id) for admin_id in config["General"]["admin_ids"].split(",")]
 
-categorie_names = ["Kategorie 1", "Kategorie 2", "Kategorie 3", "Kategorie 4"]
-categorie_keys = ["Kat1", "Kat2", "Kat3", "Kat4"]
+category_names = ["Kategorie 1", "Kategorie 2", "Kategorie 3", "Kategorie 4"]
+category_keys = ["Kat1", "Kat2", "Kat3", "Kat4"]
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -23,14 +23,19 @@ def start(update, context):
 	with open("database", "r") as json_file:
 		users = json.load(json_file)
 
-	context.bot.send_message(chat_id=chat_id, text="Hier ist ein Willkommenstext!")
+	context.bot.send_message(
+		chat_id=chat_id,
+		text="Hier ist ein Willkommenstext!"
+	)
 
 	if str(chat_id) in list(users.keys()):
-		context.bot.send_message(chat_id=chat_id,
-								text="Du schon bei diesem Bot angemeldet. Wenn du deine Präferenzen bearbeiten willt, "
-									"kannst du das mit /abo tun.")
+		context.bot.send_message(
+			chat_id=chat_id,
+			text="Du schon bei diesem Bot angemeldet. Wenn du deine Präferenzen bearbeiten willt, kannst du das mit "
+				 "/abo tun."
+		)
 	else:
-		users[str(chat_id)] = {key: False for key in categorie_keys}
+		users[str(chat_id)] = {key: False for key in category_keys}
 		with open("database", "w") as json_file:
 			json.dump(users, json_file)
 
@@ -43,9 +48,13 @@ def abo(update, context):
 		users = json.load(json_file)
 
 	if str(chat_id) in list(users.keys()):
-		context.bot.send_poll(chat_id=chat_id,
-							question="Aus welchen Kategorien möchtest du Nachrichten bekommen?",
-							options=categorie_names, is_anonymous=False, allows_multiple_answers=True)
+		context.bot.send_poll(
+			chat_id=chat_id,
+			question="Aus welchen Kategorien möchtest du Nachrichten bekommen?",
+			options=category_names,
+			is_anonymous=False,
+			allows_multiple_answers=True
+		)
 	else:
 		start(update, context)
 
@@ -55,9 +64,11 @@ def deabo(update, context):
 	with open("database", "r") as json_file:
 		users = json.load(json_file)
 
-	context.bot.send_message(chat_id=chat_id,
-							text="Du hast alle Kategorien abgewählt und wirst keine Nachrichten mehr von diesem Bot "
-								"bekommen. Um dich wieder anzumelden, nutze /start. (To-Do: Bist du sicher? einfügen)")
+	context.bot.send_message(
+		chat_id=chat_id,
+		text="Du hast alle Kategorien abgewählt und wirst keine Nachrichten mehr von diesem Bot bekommen. Um dich "
+			 "wieder anzumelden, nutze /start. (To-Do: Bist du sicher? einfügen)"
+	)
 
 	try:
 		users.pop(str(chat_id))
@@ -74,11 +85,11 @@ def poll_answer(update, context):
 	with open("database", "r") as json_file:
 		users = json.load(json_file)
 
-	for i in range(len(categorie_keys)):
+	for i in range(len(category_keys)):
 		if i in selected_answers:
-			users[str(chat_id)][categorie_keys[i]] = True
+			users[str(chat_id)][category_keys[i]] = True
 		else:
-			users[str(chat_id)][categorie_keys[i]] = False
+			users[str(chat_id)][category_keys[i]] = False
 
 	with open("database", "w") as json_file:
 		json.dump(users, json_file)

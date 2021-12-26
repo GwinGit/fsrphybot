@@ -4,8 +4,8 @@ import json
 from configparser import ConfigParser
 
 # ---------- Message ----------
-categorie = "Kat2"
-text = "Eine Nachricht aus " + categorie
+category = "Kat2"
+text = "Eine Nachricht aus " + category
 # -----------------------------
 
 config = ConfigParser()
@@ -20,5 +20,8 @@ with open("database", "r") as json_file:
 	users = json.load(json_file)
 
 for user in list(users.keys()):
-	if users[user][categorie]:
-		bot.send_message(chat_id=user, text=text)
+	if users[user][category]:
+		bot.send_message(
+			chat_id=user,
+			text=text
+		)
