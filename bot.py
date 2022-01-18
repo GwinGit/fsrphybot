@@ -9,8 +9,8 @@ config.read("config.ini")
 API_KEY = config["General"]["api_key"]
 ADMIN_IDS = [int(admin_id) for admin_id in config["General"]["admin_ids"].split(",")]
 
-category_names = ["Kategorie 1", "Kategorie 2", "Kategorie 3", "Kategorie 4"]
-category_keys = ["Kat1", "Kat2", "Kat3", "Kat4"]
+category_names = config["Categories"]["category_names"].split(",")
+category_keys = config["Categories"]["category_keys"].split(",")
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
