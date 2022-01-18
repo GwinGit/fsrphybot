@@ -26,17 +26,17 @@ def start(update, context):
 	context.bot.send_message(
 		chat_id=chat_id,
 		text="♥️ Herzlich Willkommen, deine Anmeldung war erfolgreich.\n\n"
-			 "🌍 Wir senden regelmäßig einen Überblick mit kommenden Veranstaltungsterminen, Tagesordnungspunkten der "
-			 "Fachschaft und interessanten Treffen, die von großem Interesse für Studierende sein könnten. Außerdem "
-			 "melden wir uns zwischendurch bei wichtigen Meldungen (z.B. Anmeldefristen bei Flexnow).\n\n"
-			 "🛑 Um den Empfang zu stoppen, schreibe einfach /stop."
+		"🌍 Wir senden regelmäßig einen Überblick mit kommenden Veranstaltungsterminen, Tagesordnungspunkten der "
+		"Fachschaft und interessanten Treffen, die von großem Interesse für Studierende sein könnten. "
+		"Außerdem melden wir uns zwischendurch bei wichtigen Meldungen (z.B. Anmeldefristen bei Flexnow).\n\n"
+		"🛑 Um den Empfang zu stoppen, schreibe einfach /stop."
 	)
 
 	if str(chat_id) in list(users.keys()):
 		context.bot.send_message(
 			chat_id=chat_id,
 			text="Du schon bei diesem Bot angemeldet. Wenn du deine Präferenzen bearbeiten willt, kannst du das mit "
-				 "/abo tun."
+			"/abo tun."
 		)
 	else:
 		users[str(chat_id)] = {key: False for key in category_keys}
@@ -71,7 +71,7 @@ def stop(update, context):
 	context.bot.send_message(
 		chat_id=chat_id,
 		text="Du hast alle Kategorien abgewählt und wirst keine Nachrichten mehr von diesem Bot bekommen. Um dich "
-			 "wieder anzumelden, nutze /start."
+		"wieder anzumelden, nutze /start."
 	)
 
 	try:
