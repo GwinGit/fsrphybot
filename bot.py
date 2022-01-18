@@ -25,7 +25,11 @@ def start(update, context):
 
 	context.bot.send_message(
 		chat_id=chat_id,
-		text="Hier ist ein Willkommenstext!"
+		text="♥️ Herzlich Willkommen, deine Anmeldung war erfolgreich.\n\n"
+			 "🌍 Wir senden regelmäßig einen Überblick mit kommenden Veranstaltungsterminen, Tagesordnungspunkten der "
+			 "Fachschaft und interessanten Treffen, die von großem Interesse für Studierende sein könnten. Außerdem "
+			 "melden wir uns zwischendurch bei wichtigen Meldungen (z.B. Anmeldefristen bei Flexnow).\n\n"
+			 "🛑 Um den Empfang zu stoppen, schreibe einfach /stop."
 	)
 
 	if str(chat_id) in list(users.keys()):
@@ -59,7 +63,7 @@ def abo(update, context):
 		start(update, context)
 
 
-def deabo(update, context):
+def stop(update, context):
 	chat_id = update.effective_chat.id
 	with open("database", "r") as json_file:
 		users = json.load(json_file)
@@ -67,7 +71,7 @@ def deabo(update, context):
 	context.bot.send_message(
 		chat_id=chat_id,
 		text="Du hast alle Kategorien abgewählt und wirst keine Nachrichten mehr von diesem Bot bekommen. Um dich "
-			 "wieder anzumelden, nutze /start. (To-Do: Bist du sicher? einfügen)"
+			 "wieder anzumelden, nutze /start."
 	)
 
 	try:
@@ -102,7 +106,7 @@ def feedback(update, context):
 
 dispatcher.add_handler(CommandHandler("start", start))
 dispatcher.add_handler(CommandHandler("abo", abo))
-dispatcher.add_handler(CommandHandler("deabo", deabo))
+dispatcher.add_handler(CommandHandler("stop", stop))
 dispatcher.add_handler(PollAnswerHandler(poll_answer))
 dispatcher.add_handler(MessageHandler(Filters.text, feedback))
 
