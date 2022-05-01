@@ -29,7 +29,8 @@ def start(update, context):
 		"🌍 Wir senden regelmäßig einen Überblick mit kommenden Veranstaltungsterminen, Tagesordnungspunkten der "
 		"Fachschaft und interessanten Treffen, die von großem Interesse für Studierende sein könnten. "
 		"Außerdem melden wir uns zwischendurch bei wichtigen Meldungen (z.B. Anmeldefristen bei Flexnow).\n\n"
-		"🛑 Um den Empfang zu stoppen, schreibe einfach /stop."
+		"🛑 Um den Empfang zu stoppen, schreibe einfach /stop.\n\n"
+		"📰 Mit dem Befehl /abo kannst du die verschiedenen Infokanäle abonnieren."
 	)
 
 	if str(chat_id) in list(users.keys()):
@@ -58,6 +59,22 @@ def abo(update, context):
 			options=category_names,
 			is_anonymous=False,
 			allows_multiple_answers=True
+		)
+		context.bot.send_message(
+			chat_id=chat_id,
+			text="Veranstaltungen\n"
+			"Hier gibt es kurz und knapp Infos zu Veranstaltungen der Physikfakultat, "
+			"der Fachschaft und der Universität.\n\n"
+			"Studienticker\n"
+			"Hier erinnern wir euch an wichtige Deadlines wie beispielsweise "
+			"die Anmeldedeadline bei Flexnow für Übungen.\n\n"
+			"FSR\n"
+			"Hier laden wir euch regelmäßig zu unseren Sitzungen ein und posten auch die Tagesordnung.\n\n"
+			"Interessante TOP's\n"
+			"Tagesaktuelle Dinge, die interessant für dich sein könnten!\n\n"
+			"Stellenausschreibungen\n"
+			"Auf der Suche nach 'nem Hiwijob? Hier leiten wir Ausschreibungen für Stipendien, Preise, Akademien, "
+			"Summer schools, Tutor*Innenjobs und Stellenausschreibungen weiter."
 		)
 	else:
 		start(update, context)
