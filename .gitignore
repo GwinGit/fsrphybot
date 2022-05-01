@@ -131,9 +131,12 @@ dmypy.json
 # IDE
 .idea/
 
-# config files
+# Configuration files
 config.ini
 
 # Supervisor stuff
 *.log
 *.pid
+
+# User data
+database
