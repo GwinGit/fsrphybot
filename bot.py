@@ -2,6 +2,7 @@ from telegram.ext import Updater, CommandHandler, PollAnswerHandler, MessageHand
 import logging
 import json
 from configparser import ConfigParser
+import os
 
 config = ConfigParser()
 config.read("config.ini")
@@ -11,6 +12,9 @@ ADMIN_IDS = [int(admin_id) for admin_id in config["General"]["admin_ids"].split(
 
 category_names = config["Categories"]["category_names"].split(",")
 category_keys = config["Categories"]["category_keys"].split(",")
+
+if not os.path.exists("database"):
+	open("database", 'w').close()
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
