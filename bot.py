@@ -5,7 +5,7 @@ from configparser import ConfigParser
 import os
 
 config = ConfigParser()
-config.read("config.example.ini")
+config.read("config.ini")
 
 API_KEY = config["General"]["api_key"]
 ADMIN_IDS = [int(admin_id) for admin_id in config["General"]["admin_ids"].split(",")]
