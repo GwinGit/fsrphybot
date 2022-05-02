@@ -5,7 +5,7 @@ from configparser import ConfigParser
 import os
 
 config = ConfigParser()
-config.read("config.ini")
+config.read("config.example.ini")
 
 API_KEY = config["General"]["api_key"]
 ADMIN_IDS = [int(admin_id) for admin_id in config["General"]["admin_ids"].split(",")]
@@ -14,7 +14,8 @@ category_names = config["Categories"]["category_names"].split(",")
 category_keys = config["Categories"]["category_keys"].split(",")
 
 if not os.path.exists("database"):
-	open("database", 'w').close()
+	with open("database", 'w') as json_file:
+		json_file.write("{}")
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
