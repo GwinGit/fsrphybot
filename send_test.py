@@ -13,6 +13,7 @@ config = ConfigParser()
 config.read("config.ini")
 
 API_KEY = config["General"]["api_key"]
+category_names = config["Categories"]["category_names"].split(",")
 category_keys = config["Categories"]["category_keys"].split(",")
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -22,12 +23,12 @@ while True:
 	with open("database", "r") as json_file:
 		users = json.load(json_file)
 
-	for category_key in category_keys:
+	for i in range(len(category_keys)):
 		for user in list(users.keys()):
-			if users[user][category_key]:
+			if users[user][category_keys[i]]:
 				bot.send_message(
 					chat_id=user,
-					text="Eine Nachricht aus " + category_key
+					text=f"#{category_names[i]}: Eine Nachricht aus {category_keys[i]}"
 				)
 
 	sleep(60)
