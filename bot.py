@@ -3,6 +3,7 @@ import logging
 import json
 from configparser import ConfigParser
 import os
+from itertools import count
 
 config = ConfigParser()
 config.read("config.ini")
@@ -12,6 +13,13 @@ ADMIN_IDS = [int(admin_id) for admin_id in config["General"]["admin_ids"].split(
 
 category_names = config["Categories"]["category_names"].split(",")
 category_keys = config["Categories"]["category_keys"].split(",")
+category_descriptions = []
+
+for i in count(1):
+	try:
+		category_descriptions.append(config["Categories"][f"description{i}"])
+	except KeyError:
+		break
 
 if not os.path.exists("database"):
 	with open("database", 'w') as json_file:
@@ -65,21 +73,15 @@ def abo(update, context):
 			is_anonymous=False,
 			allows_multiple_answers=True
 		)
+
+		message = ""
+		for i in range(len(category_descriptions)):
+			message += f"#{category_names[i]}\n"
+			message += category_descriptions[i] + "\n\n"
+
 		context.bot.send_message(
 			chat_id=chat_id,
-			text="Veranstaltungen\n"
-			"Hier gibt es kurz und knapp Infos zu Veranstaltungen der Physikfakultat, "
-			"der Fachschaft und der Universität.\n\n"
-			"Studienticker\n"
-			"Hier erinnern wir euch an wichtige Deadlines wie beispielsweise "
-			"die Anmeldedeadline bei Flexnow für Übungen.\n\n"
-			"FSR\n"
-			"Hier laden wir euch regelmäßig zu unseren Sitzungen ein und posten auch die Tagesordnung.\n\n"
-			"Interessante TOP's\n"
-			"Tagesaktuelle Dinge, die interessant für dich sein könnten!\n\n"
-			"Stellenausschreibungen\n"
-			"Auf der Suche nach 'nem Hiwijob? Hier leiten wir Ausschreibungen für Stipendien, Preise, Akademien, "
-			"Summer schools, Tutor*Innenjobs und Stellenausschreibungen weiter."
+			text=message
 		)
 	else:
 		start(update, context)
