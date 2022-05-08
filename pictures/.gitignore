@@ -1,0 +1,3 @@
+# ignore everything except .gitignore, so that this directory will be synchronized as an empty folder
+*
+!.gitignore
