@@ -1,4 +1,4 @@
-from telegram import Bot
+from telegram import Bot, error
 import logging
 import json
 from configparser import ConfigParser
@@ -6,6 +6,8 @@ from configparser import ConfigParser
 # ---------- Message ----------
 category_key = "Kat2"
 text = "Eine Nachricht aus " + category_key
+with_picture = True
+picture_file = "pic.jpg"		# should be located in pictures/picture_file
 # -----------------------------
 
 config = ConfigParser()
@@ -27,7 +29,24 @@ with open("database", "r") as json_file:
 
 for user in list(users.keys()):
 	if users[user][category_key]:
-		bot.send_message(
-			chat_id=user,
-			text=text
-		)
+		if with_picture:
+			try:
+				bot.send_photo(
+					chat_id=user,
+					photo=open(f"pictures/{picture_file}", "rb"),
+					caption=text
+				)
+			except error.BadRequest:
+				bot.send_photo(
+					chat_id=user,
+					photo=open(f"pictures/{picture_file}", "rb")
+				)
+				bot.send_message(
+					chat_id=user,
+					text=text
+				)
+		else:
+			bot.send_message(
+				chat_id=user,
+				text=text
+			)
