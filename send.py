@@ -8,12 +8,33 @@ category_key = "Kat2"
 text = "Eine Nachricht aus " + category_key
 with_picture = True
 picture_file = "pic.jpg"		# should be located in pictures/picture_file
+send_as_test = True				# if true, the message will only be send to the admins defined in the config
 # -----------------------------
+
+
+def send_photo_with_caption(chat_id, photo, caption):
+	try:
+		bot.send_photo(
+			chat_id=chat_id,
+			photo=photo,
+			caption=caption
+		)
+	except error.BadRequest:
+		bot.send_photo(
+			chat_id=chat_id,
+			photo=photo
+		)
+		bot.send_message(
+			chat_id=chat_id,
+			text=caption
+		)
+
 
 config = ConfigParser()
 config.read("config.ini")
 
 API_KEY = config["General"]["api_key"]
+ADMIN_IDS = [int(admin_id) for admin_id in config["General"]["admin_ids"].split(",")]
 
 category_names = config["Categories"]["category_names"].split(",")
 category_keys = config["Categories"]["category_keys"].split(",")
@@ -24,29 +45,33 @@ bot = Bot(token=API_KEY)
 
 text = f"#{category_name}: " + text
 
-with open("database", "r") as json_file:
-	users = json.load(json_file)
-
-for user in list(users.keys()):
-	if users[user][category_key]:
+if send_as_test:
+	for admin_id in ADMIN_IDS:
 		if with_picture:
-			try:
-				bot.send_photo(
+			send_photo_with_caption(
+				chat_id=admin_id,
+				photo=open(f"pictures/{picture_file}", "rb"),
+				caption=text
+			)
+		else:
+			bot.send_message(
+				chat_id=admin_id,
+				text=text
+			)
+else:
+	with open("database", "r") as json_file:
+		users = json.load(json_file)
+
+	for user in list(users.keys()):
+		if users[user][category_key]:
+			if with_picture:
+				send_photo_with_caption(
 					chat_id=user,
 					photo=open(f"pictures/{picture_file}", "rb"),
 					caption=text
 				)
-			except error.BadRequest:
-				bot.send_photo(
-					chat_id=user,
-					photo=open(f"pictures/{picture_file}", "rb")
-				)
+			else:
 				bot.send_message(
 					chat_id=user,
 					text=text
 				)
-		else:
-			bot.send_message(
-				chat_id=user,
-				text=text
-			)
