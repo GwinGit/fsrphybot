@@ -15,12 +15,14 @@ category_names = config["Categories"]["category_names"].split(",")
 category_keys = config["Categories"]["category_keys"].split(",")
 category_descriptions = []
 
+# Load the categorie descriptions from the config file
 for i in count(1):
 	try:
 		category_descriptions.append(config["Categories"][f"description{i}"])
 	except KeyError:
 		break
 
+# Create an empty database if it doesn't exist
 if not os.path.exists("database"):
 	with open("database", 'w') as json_file:
 		json_file.write("{}")
@@ -31,11 +33,15 @@ updater = Updater(token=API_KEY)
 dispatcher = updater.dispatcher
 
 
+# Send a welcome message to the user and redirect to managing categories
 def start(update, context):
 	chat_id = update.effective_chat.id
+
+	# Load users and their category subscriptions from the database
 	with open("database", "r") as json_file:
 		users = json.load(json_file)
 
+	# Welcome message
 	context.bot.send_message(
 		chat_id=chat_id,
 		text="♥️ Herzlich Willkommen, deine Anmeldung war erfolgreich.\n\n"
@@ -46,6 +52,7 @@ def start(update, context):
 		"📰 Mit dem Befehl /abo kannst du die verschiedenen Infokanäle abonnieren."
 	)
 
+	# Redirect to managing categories if the user is not in the database
 	if str(chat_id) in list(users.keys()):
 		context.bot.send_message(
 			chat_id=chat_id,
@@ -53,6 +60,7 @@ def start(update, context):
 			"/abo tun."
 		)
 	else:
+		# Add the user to the database with no category subscriptions
 		users[str(chat_id)] = {key: False for key in category_keys}
 		with open("database", "w") as json_file:
 			json.dump(users, json_file)
@@ -60,11 +68,15 @@ def start(update, context):
 		abo(update, context)
 
 
+# Manage the user's category subscriptions
 def abo(update, context):
 	chat_id = update.effective_chat.id
+
+	# Load users and their category subscriptions from the database
 	with open("database", "r") as json_file:
 		users = json.load(json_file)
 
+	# Send a poll to choose the category subscriptions if the user is in the database
 	if str(chat_id) in list(users.keys()):
 		context.bot.send_poll(
 			chat_id=chat_id,
@@ -74,6 +86,7 @@ def abo(update, context):
 			allows_multiple_answers=True
 		)
 
+		# Send an overview of the categories with their descriptions
 		message = ""
 		for i in range(len(category_descriptions)):
 			message += f"#{category_names[i]}\n"
@@ -84,54 +97,70 @@ def abo(update, context):
 			text=message
 		)
 	else:
+		# Send a welcome message if the user is not in the database
 		start(update, context)
 
 
+# Remove the user from the database
 def stop(update, context):
 	chat_id = update.effective_chat.id
+
+	# Load users and their category subscriptions from the database
 	with open("database", "r") as json_file:
 		users = json.load(json_file)
 
+	# Goodbye message
 	context.bot.send_message(
 		chat_id=chat_id,
 		text="Du hast alle Kategorien abgewählt und wirst keine Nachrichten mehr von diesem Bot bekommen. Um dich "
 		"wieder anzumelden, nutze /start."
 	)
 
+	# Remove the user from the database if they are in the database
 	try:
 		users.pop(str(chat_id))
+
+		# Save the database
 		with open("database", "w") as json_file:
 			json.dump(users, json_file)
 	except KeyError:
+		# If the user is not in the database, do nothing
 		pass
 
 
+# Manage the user's category subscriptions from their answer to the poll
 def poll_answer(update, context):
 	chat_id = update.poll_answer.user.id
 	selected_answers = update.poll_answer.option_ids
 
+	# Load users and their category subscriptions from the database
 	with open("database", "r") as json_file:
 		users = json.load(json_file)
 
+	# Update the user's category subscriptions
 	for i in range(len(category_keys)):
 		if i in selected_answers:
 			users[str(chat_id)][category_keys[i]] = True
 		else:
 			users[str(chat_id)][category_keys[i]] = False
 
+	# Save the database
 	with open("database", "w") as json_file:
 		json.dump(users, json_file)
 
 
+# Redirect other messages to the admins
 def feedback(update, context):
 	for admin_id in ADMIN_IDS:
 		update.message.forward(chat_id=admin_id)
 
 
+# Link the functions to the commands and events
 dispatcher.add_handler(CommandHandler("start", start))
 dispatcher.add_handler(CommandHandler("abo", abo))
 dispatcher.add_handler(CommandHandler("stop", stop))
 dispatcher.add_handler(PollAnswerHandler(poll_answer))
 dispatcher.add_handler(MessageHandler(Filters.text, feedback))
 
+# Start the bot
 updater.start_polling()
