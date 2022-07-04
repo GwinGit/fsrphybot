@@ -33,13 +33,22 @@ updater = Updater(token=API_KEY)
 dispatcher = updater.dispatcher
 
 
+# Load users and their category subscriptions from the database
+def load_database():
+	with open("database", "r") as json_file:
+		return json.load(json_file)
+
+
+# Save users and their category subscriptions to the database
+def write_database(users):
+	with open("database", "w") as json_file:
+		json.dump(users, json_file)
+
+
 # Send a welcome message to the user and redirect to managing categories
 def start(update, context):
 	chat_id = update.effective_chat.id
-
-	# Load users and their category subscriptions from the database
-	with open("database", "r") as json_file:
-		users = json.load(json_file)
+	users = load_database()
 
 	# Welcome message
 	context.bot.send_message(
@@ -62,8 +71,7 @@ def start(update, context):
 	else:
 		# Add the user to the database with no category subscriptions
 		users[str(chat_id)] = {key: False for key in category_keys}
-		with open("database", "w") as json_file:
-			json.dump(users, json_file)
+		write_database(users)
 
 		abo(update, context)
 
@@ -71,10 +79,7 @@ def start(update, context):
 # Manage the user's category subscriptions
 def abo(update, context):
 	chat_id = update.effective_chat.id
-
-	# Load users and their category subscriptions from the database
-	with open("database", "r") as json_file:
-		users = json.load(json_file)
+	users = load_database()
 
 	# Send a poll to choose the category subscriptions if the user is in the database
 	if str(chat_id) in list(users.keys()):
@@ -104,10 +109,7 @@ def abo(update, context):
 # Remove the user from the database
 def stop(update, context):
 	chat_id = update.effective_chat.id
-
-	# Load users and their category subscriptions from the database
-	with open("database", "r") as json_file:
-		users = json.load(json_file)
+	users = load_database()
 
 	# Goodbye message
 	context.bot.send_message(
@@ -119,10 +121,7 @@ def stop(update, context):
 	# Remove the user from the database if they are in the database
 	try:
 		users.pop(str(chat_id))
-
-		# Save the database
-		with open("database", "w") as json_file:
-			json.dump(users, json_file)
+		write_database(users)
 	except KeyError:
 		# If the user is not in the database, do nothing
 		pass
@@ -132,10 +131,7 @@ def stop(update, context):
 def poll_answer(update, context):
 	chat_id = update.poll_answer.user.id
 	selected_answers = update.poll_answer.option_ids
-
-	# Load users and their category subscriptions from the database
-	with open("database", "r") as json_file:
-		users = json.load(json_file)
+	users = load_database()
 
 	# Update the user's category subscriptions
 	for i in range(len(category_keys)):
@@ -144,9 +140,7 @@ def poll_answer(update, context):
 		else:
 			users[str(chat_id)][category_keys[i]] = False
 
-	# Save the database
-	with open("database", "w") as json_file:
-		json.dump(users, json_file)
+	write_database(users)
 
 
 # Redirect other messages to the admins
