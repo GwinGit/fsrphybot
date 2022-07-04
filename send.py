@@ -12,6 +12,12 @@ send_as_test = True				# if true, the message will only be send to the admins de
 # -----------------------------
 
 
+# Load users and their category subscriptions from the database
+def load_database():
+	with open("database", "r") as json_file:
+		return json.load(json_file)
+
+
 def send_photo_with_caption(chat_id, photo, caption):
 	try:
 		bot.send_photo(
@@ -59,9 +65,7 @@ if send_as_test:
 				text=text
 			)
 else:
-	with open("database", "r") as json_file:
-		users = json.load(json_file)
-
+	users = load_database()
 	for user in list(users.keys()):
 		if users[user][category_key]:
 			if with_picture:

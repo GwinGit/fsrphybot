@@ -19,10 +19,15 @@ category_keys = config["Categories"]["category_keys"].split(",")
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 bot = Bot(token=API_KEY)
 
-while True:
-	with open("database", "r") as json_file:
-		users = json.load(json_file)
 
+# Load users and their category subscriptions from the database
+def load_database():
+	with open("database", "r") as json_file:
+		return json.load(json_file)
+
+
+while True:
+	users = load_database()
 	for i in range(len(category_keys)):
 		for user in list(users.keys()):
 			if users[user][category_keys[i]]:
