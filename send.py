@@ -18,6 +18,7 @@ def load_database():
 		return json.load(json_file)
 
 
+# Try to send a picture with a caption, if the caption is too long send the caption as a separate message
 def send_photo_with_caption(chat_id, photo, caption):
 	try:
 		bot.send_photo(
@@ -67,6 +68,7 @@ if send_as_test:
 else:
 	users = load_database()
 	for user in list(users.keys()):
+		# Check if the user is subscribed to the category
 		if users[user][category_key]:
 			if with_picture:
 				send_photo_with_caption(
